@@ -16,8 +16,9 @@
  * 
  */
 
-package widowmaker110.googleBot;
+package widowmaker110;
 
+import java.awt.FlowLayout;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -31,28 +32,41 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class GoogleBotMain {
-	
-	private static int pages;
+import java.awt.*; 
+import java.awt.event.*; 
+
+import javax.swing.*; 
+import javax.swing.event.*; 
+
+public class GoogleBotMain extends JFrame {
+
+	private static boolean DeveloperMode = true;
+	private static final long serialVersionUID = 1L;
+	private static int pages = 20;
 	private static String query;
 	private static ArrayList<webPageObject> array;
+	public static final int WINDOW_WIDTH = 600;
+	public static final int WINDOW_HEIGHT = 600;
+	
+	// JFRAME Variables declaration 
+ 	private JLabel jLabel2; 
+ 	private JLabel jLabel3; 
+ 	private JLabel jLabel4; 
+ 	private JLabel jLabel7; 
+ 	private JList jList2; 
+ 	private JScrollPane jScrollPane2; 
+ 	private JTextArea jTextArea1; 
+ 	private JScrollPane jScrollPane3; 
+ 	private JButton jButton3; 
+ 	private JPanel contentPane; 
+ 	//----- 
+ 	private JPanel jPanel4; 
 	
 	// a series of brute force attributes to look up
 	// TODO make sure to change these attributes to things
 	// TODO which are distinct in your resume. The more you
 	// TODO put into these attributes, the better the results
-	private static String[] Attributes = {
-		  "class of 2002",
-		  "John Smith",
-		  "John Cater Smith", 
-		  "Ivy Tech Community College", 
-		  "Computer Science", 
-		  "Eagle Scout",
-		  "Computer Science",
-		  "Programmer",
-		  "E-Portfolio",
-		  "123-456-7891"
-		  };
+	private static String[] Attributes = {};
 	
 	/**
 	 * search() performs a lot of the google result page scraping. As it finds a result page url + title
@@ -61,17 +75,21 @@ public class GoogleBotMain {
 	 */
 	private static void search() throws IOException
 	{
-		String google = "http://www.google.com/search?q=";
+		String google = "https://www.google.com/search?q=";
 		String charset = "UTF-8";
 		String userAgent = "ExampleBot 1.0 (+http://example.com/bot)"; // Change this to your company's name and bot homepage!
 		Elements links;
+		String[] temp = query.split("\\s+");
+		String broken = temp[0];
+		String broken2 = temp[1];
+		String newBroken = broken + "+" + broken2;
 		
 		for(int i = 0; i < pages; i++)
 		{
 			// if its the first page of google results
 			if(i == 0)
 			{
-				links = Jsoup.connect(google + URLEncoder.encode(query, charset)).userAgent(userAgent).get().select("li.g>h3>a");
+				links = Jsoup.connect(google + URLEncoder.encode( query, charset)).userAgent(userAgent).get().select("li.g>h3>a");
 			}
 			// handling all the pages of google results after the first page
 			else
@@ -80,8 +98,9 @@ public class GoogleBotMain {
 				links = Jsoup.connect(google + URLEncoder.encode(query, charset) + page).userAgent(userAgent).get().select("li.g>h3>a");
 			}
 			
-			for (Element link : links) {
-			    String title = link.text();
+			for (Element link : links) 
+			{  
+				String title = link.text();
 			    String url = link.absUrl("href"); // Google returns URLs in format "http://www.google.com/url?q=<url>&sa=U&ei=<someKey>".
 			    url = URLDecoder.decode(url.substring(url.indexOf('=') + 1, url.indexOf('&')), "UTF-8");
 
@@ -89,14 +108,13 @@ public class GoogleBotMain {
 			        continue; // Ads/news/etc.
 			    }
 			    
-			    /*
-			     * Debugging
-			     * 
-			    	System.out.println("Title: " + title);
-			    	System.out.println("URL: " + url);
-			    	System.out.println("");
-			    */
-			    
+			  if(DeveloperMode == true)
+			  {
+				System.out.println("Title: " + title);
+			    System.out.println("URL: " + url);
+			    System.out.println("");
+			  }
+			    	  
 			    // add objects to the array
 				webPageObject object = new webPageObject(title, url, 0 );
 				array.add(object);
@@ -189,6 +207,7 @@ public class GoogleBotMain {
 	{
 		System.out.println("----------------------------------------------------------------------");
 		System.out.println("Below are the following top ranked websites regarding your information");
+		System.out.println("");
 		
 		for(int i = 0; i < array.size(); i++)
 		{
@@ -203,16 +222,142 @@ public class GoogleBotMain {
 		}	
 	}
 	
+	public GoogleBotMain() 
+ 	{ 
+ 		super(); 
+ 		initializeComponent();   
+ 		this.setVisible(true); 
+ 	} 
+	
+ 	private void initializeComponent() 
+ 	{ 
+ 		jLabel2 = new JLabel(); 
+ 		jLabel3 = new JLabel(); 
+ 		jLabel4 = new JLabel(); 
+ 		jLabel7 = new JLabel(); 
+ 		final JList<String> jList2 = new JList<String>(new DefaultListModel<String>());
+ 		jScrollPane2 = new JScrollPane(); 
+ 		jTextArea1 = new JTextArea(); 
+ 		jScrollPane3 = new JScrollPane(); 
+ 		jButton3 = new JButton(); 
+ 		contentPane = (JPanel)this.getContentPane();
+ 		ArrayList<String> arr = new ArrayList<String>();
+ 		jPanel4 = new JPanel();
+ 		for(int i = 0; i < 20; i++)
+ 		{
+ 			arr.add(String.valueOf(i));
+ 		}
+
+ 		jLabel2.setText("Welcome to the GoogleBot. This program will help you find out just how much is out there about you."); 
+ 		jLabel3.setText("Results"); 
+ 		jLabel4.setText("Please Enter the most important information about yourself."); 
+ 		jLabel7.setText("Make sure to separate all of these attributes with commas \" , \"" ); 
+ 		
+ 		jList2.addListSelectionListener(new ListSelectionListener() { 
+ 			public void valueChanged(ListSelectionEvent e) 
+ 			{ 
+ 				// makes sure only 1 is selected at a time and doesn't double tap the result
+ 				if(!e.getValueIsAdjusting()) 
+ 	 	 		{ 
+ 					Object object1 = jList2.getSelectedValue();
+ 			    	String string1 = object1.toString();
+ 			    	System.out.println(string1);
+ 	 	 		}
+ 			}
+ 		}); 
+ 		
+ 		jScrollPane2.setViewportView(jList2); 
+ 		jTextArea1.setText("Put your full name first then attributes. (e.g. John Smith, Eagle Scout, DePauw University, Computer Science Major)"); 
+ 		jScrollPane3.setViewportView(jTextArea1); 
+ 		jButton3.setText("Search"); 
+ 		jButton3.addActionListener(new ActionListener() { 
+ 			public void actionPerformed(ActionEvent e) 
+ 			{
+ 				String string1 = jTextArea1.getText(); // get the information
+ 				String[] strings = string1.split(","); // split it by commas 
+ 				
+ 				if(DeveloperMode == true)
+ 				{
+ 					System.out.println(string1);
+ 					System.out.println(strings[1].trim());
+ 				}
+ 				
+ 				Attributes = strings; // set the global attributes
+			    query = strings[0];
+			    
+ 				try {
+					search();
+				} catch (IOException e1) {
+					((DefaultListModel<String>)jList2.getModel()).addElement("It appears something went wrong with the program. Error 1");
+					e1.printStackTrace();
+				}
+ 				getWebPages();
+ 				sort();
+ 				
+			    for(int i = 0; i < array.size(); i++)
+ 				{
+			    	if(!(array.get(i).getAttributes() == 0))
+					{
+ 					((DefaultListModel<String>)jList2.getModel()).addElement("Matching Attributes: " + array.get(i).getAttributes() + "  Title: " + array.get(i).getTitle() + 
+ 							"  URL: " + array.get(i).getUrl());
+					}
+ 				}
+ 			} 
+  
+ 		}); 
+ 		 
+ 		contentPane.setLayout(null); 
+ 		addComponent(contentPane, jLabel2, 33,20,703,18); 
+ 		addComponent(contentPane, jLabel3, 358,179,60,18); 
+ 		addComponent(contentPane, jLabel4, 28,91,299,18); 
+ 		addComponent(contentPane, jLabel7, 27,166,301,18); 
+ 		addComponent(contentPane, jScrollPane2, 358,198,424,459); 
+ 		addComponent(contentPane, jScrollPane3, 25,198,295,268); 
+ 		addComponent(contentPane, jButton3, 234,472,83,28); 
+ 		addComponent(contentPane, jPanel4, 2,1,32767,0); 
+
+ 		jPanel4.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5)); 
+
+ 		this.setName("GoogleBot"); 
+ 		this.setLocation(new Point(0, 0)); 
+ 		this.setSize(new Dimension(800, 800)); 
+ 	} 
+ 	
+ 	/** Add Component Without a Layout Manager (Absolute Positioning) */ 
+ 	private void addComponent(Container container,Component c,int x,int y,int width,int height) 
+ 	{ 
+ 		c.setBounds(x,y,width,height); 
+ 		container.add(c); 
+ 	}  
+  
+ 	private void jButton3_actionPerformed(ActionEvent e) 
+ 	{ 
+ 		System.out.println("\njButton3_actionPerformed(ActionEvent e) called."); 
+ 	} 
+	
 	public static void main(String[] args) throws IOException 
 	{
 		// initialize variables
 		array = new ArrayList<webPageObject>();	
-
+		
+		JFrame.setDefaultLookAndFeelDecorated(true); 
+ 		JDialog.setDefaultLookAndFeelDecorated(true); 
+ 		try 
+ 		{ 
+ 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); 
+ 		} 
+ 		catch (Exception ex) 
+ 		{ 
+ 			System.out.println("Failed loading L&F: "); 
+ 			System.out.println(ex); 
+ 		} 
+ 		new GoogleBotMain();
+		
 		// main components
-		getQuery();
-		search();
-		getWebPages();
-		sort();
-		print();
+//		getQuery();
+//		search();
+//		getWebPages();
+//		sort();
+//		print();
 	}
 }
