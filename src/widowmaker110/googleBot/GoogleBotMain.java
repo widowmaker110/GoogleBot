@@ -42,7 +42,7 @@ public class GoogleBotMain extends JFrame {
 
 	private static boolean DeveloperMode = true;
 	private static final long serialVersionUID = 1L;
-	private static int pages = 20;
+	private static int pages = 10;
 	private static String query;
 	private static ArrayList<webPageObject> array;
 	public static final int WINDOW_WIDTH = 600;
@@ -273,6 +273,8 @@ public class GoogleBotMain extends JFrame {
  		jButton3.addActionListener(new ActionListener() { 
  			public void actionPerformed(ActionEvent e) 
  			{
+ 				// clear
+ 			    jList2.setModel(new DefaultListModel<String>());
  				String string1 = jTextArea1.getText(); // get the information
  				String[] strings = string1.split(","); // split it by commas 
  				
